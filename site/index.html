@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080b14">
+    <meta
+      name="description"
+      content="Search current Bloxtsar Baddies item values, token values, RAP, demand, and trends."
+    >
+    <title>Bloxtsar Baddies Values</title>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#items">Skip to item list</a>
+
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero__content">
+          <div class="eyebrow"><span class="live-dot" aria-hidden="true"></span> Hourly data</div>
+          <h1>Bloxtsar Baddies Values</h1>
+          <p class="hero__lede">
+            A searchable view of current item values, token values, RAP, demand, and market trends.
+          </p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#items">Browse items</a>
+            <a class="button" href="./baddies-items.json" download>Download JSON</a>
+          </div>
+        </div>
+
+        <div class="update-card" aria-live="polite">
+          <span class="update-card__label">Dataset status</span>
+          <strong id="datasetStatus">Loading latest scan…</strong>
+          <time id="lastUpdated">—</time>
+        </div>
+      </header>
+
+      <main>
+        <section class="stats" aria-labelledby="scan-overview-heading">
+          <h2 class="visually-hidden" id="scan-overview-heading">Scan overview</h2>
+          <article class="stat-card">
+            <span class="stat-card__label">IDs scanned</span>
+            <strong id="statScanned">—</strong>
+          </article>
+          <article class="stat-card stat-card--accent">
+            <span class="stat-card__label">Valid items</span>
+            <strong id="statValid">—</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-card__label">With values</span>
+            <strong id="statWithValues">—</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-card__label">Nonexistent IDs</span>
+            <strong id="statNonexistent">—</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-card__label">Invalid pages</span>
+            <strong id="statInvalid">—</strong>
+          </article>
+          <article class="stat-card">
+            <span class="stat-card__label">Failed requests</span>
+            <strong id="statFailed">—</strong>
+          </article>
+        </section>
+
+        <section class="catalog panel" id="items" aria-labelledby="catalog-heading">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Item catalog</span>
+              <h2 id="catalog-heading">Find a Baddies item</h2>
+            </div>
+            <p id="resultCount" class="result-count" aria-live="polite">Loading items…</p>
+          </div>
+
+          <div class="controls" aria-label="Item filters">
+            <label class="field field--search">
+              <span>Search</span>
+              <input id="searchInput" type="search" placeholder="Item name or ID" autocomplete="off">
+            </label>
+
+            <label class="field">
+              <span>Demand</span>
+              <select id="demandFilter">
+                <option value="">All demand</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Trend</span>
+              <select id="trendFilter">
+                <option value="">All trends</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Value status</span>
+              <select id="valueFilter">
+                <option value="">All items</option>
+                <option value="with">With value</option>
+                <option value="without">Without value</option>
+              </select>
+            </label>
+
+            <button class="button button--reset" id="resetFilters" type="button">Reset</button>
+          </div>
+
+          <div class="error-banner" id="errorBanner" role="alert" hidden></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" data-column="itemId" aria-sort="ascending">
+                    <button class="sort-button" type="button" data-sort="itemId">ID <span aria-hidden="true">↑</span></button>
+                  </th>
+                  <th scope="col" data-column="itemName" aria-sort="none">
+                    <button class="sort-button" type="button" data-sort="itemName">Item <span aria-hidden="true">↕</span></button>
+                  </th>
+                  <th scope="col" data-column="value" aria-sort="none">
+                    <button class="sort-button" type="button" data-sort="value">Value <span aria-hidden="true">↕</span></button>
+                  </th>
+                  <th scope="col" data-column="tokenValue" aria-sort="none">
+                    <button class="sort-button" type="button" data-sort="tokenValue">Token value <span aria-hidden="true">↕</span></button>
+                  </th>
+                  <th scope="col" data-column="rap" aria-sort="none">
+                    <button class="sort-button" type="button" data-sort="rap">RAP <span aria-hidden="true">↕</span></button>
+                  </th>
+                  <th scope="col" data-column="demand" aria-sort="none">
+                    <button class="sort-button" type="button" data-sort="demand">Demand <span aria-hidden="true">↕</span></button>
+                  </th>
+                  <th scope="col" data-column="trend" aria-sort="none">
+                    <button class="sort-button" type="button" data-sort="trend">Trend <span aria-hidden="true">↕</span></button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="itemRows"></tbody>
+            </table>
+          </div>
+
+          <div class="empty-state" id="emptyState" hidden>
+            <strong>No items match these filters.</strong>
+            <span>Try a broader search or reset the filters.</span>
+          </div>
+        </section>
+
+        <section class="api-panel panel" aria-labelledby="api-heading">
+          <div>
+            <span class="eyebrow">Static JSON API</span>
+            <h2 id="api-heading">Use the data elsewhere</h2>
+            <p>
+              These read-only endpoints are rebuilt from the same scan that powers this page.
+            </p>
+          </div>
+          <div class="endpoint-list">
+            <a href="./baddies-items.json"><code>GET /baddies-items.json</code><span>Valid item records</span></a>
+            <a href="./scan-summary.json"><code>GET /scan-summary.json</code><span>Latest scan statistics</span></a>
+            <a href="./api.json"><code>GET /api.json</code><span>Endpoint index</span></a>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>Data is refreshed by GitHub Actions. Missing values are shown as an em dash.</p>
+        <a href="https://github.com/bloxapi12789012/bloxstar">View source on GitHub</a>
+      </footer>
+    </div>
+
+    <noscript>This page requires JavaScript to load and filter the generated JSON dataset.</noscript>
+  </body>
+</html>

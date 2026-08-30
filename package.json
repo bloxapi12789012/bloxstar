@@ -8,6 +8,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "build:site": "node src/build-site.js",
     "scrape": "node src/main.js",
     "test": "node --test"
   }

@@ -1,6 +1,14 @@
-# Bloxtsar Baddies item scraper
+# Bloxtsar Baddies item scraper and website
 
-This project scans every numeric item ID in an inclusive range. It does not assume IDs are contiguous and does not discover the catalog first.
+This project scans every numeric item ID in an inclusive range, publishes the valid records as a static JSON API, and deploys a searchable website to GitHub Pages. It does not assume IDs are contiguous and does not discover the catalog first.
+
+Website: <https://bloxapi12789012.github.io/bloxstar/>
+
+JSON endpoints:
+
+- <https://bloxapi12789012.github.io/bloxstar/baddies-items.json>
+- <https://bloxapi12789012.github.io/bloxstar/scan-summary.json>
+- <https://bloxapi12789012.github.io/bloxstar/api.json>
 
 By default it requests:
 
@@ -33,7 +41,10 @@ Node.js 20 or newer is required. There are no third-party runtime dependencies.
 ```bash
 npm test
 npm run scrape
+npm run build:site
 ```
+
+`npm run build:site` validates the latest scan files in `data/` and creates the deployable site in `public/`. The frontend source lives in `site/` and has no third-party runtime dependencies.
 
 To change the inclusive maximum:
 
@@ -96,6 +107,8 @@ Elapsed: 123.4s
 
 ## GitHub Actions
 
-`.github/workflows/scrape-baddies.yml` runs at minute 17 of every hour, defaults to IDs `1-2856`, uses four workers, runs the tests first, and uploads all four output files as a 30-day workflow artifact. The off-peak minute reduces top-of-hour scheduling delays while retaining a 60-minute interval.
+`.github/workflows/scrape-baddies.yml` runs at minute 17 of every hour, defaults to IDs `1-2856`, uses four workers, runs the tests, builds the website, keeps the raw scan files as a 30-day workflow artifact, and deploys the site through the protected `github-pages` environment. The off-peak minute reduces top-of-hour scheduling delays while retaining a 60-minute interval.
 
 Manual runs expose an optional `max_item_id` input so the upper bound can be increased without editing the workflow. When it is blank, the workflow uses the single default from `src/config.js`.
+
+The deployed API is static and read-only: GitHub Pages serves the JSON files produced by the latest successful scan. Each successful hourly deployment replaces the website and endpoints together, so their timestamps and counts stay consistent.

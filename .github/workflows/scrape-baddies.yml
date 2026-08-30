@@ -21,6 +21,9 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     timeout-minutes: 55
+    permissions:
+      contents: read
+      pages: read
     env:
       MIN_ITEM_ID: '1'
       # Empty for scheduled/default runs; src/config.js supplies 2856.
@@ -43,6 +46,9 @@ jobs:
       - name: Scan configured item ID range
         run: npm run scrape
 
+      - name: Build website and JSON API
+        run: npm run build:site
+
       - name: Upload scan results
         uses: actions/upload-artifact@v7
         with:
@@ -50,3 +56,28 @@ jobs:
           path: data/
           if-no-files-found: error
           retention-days: 30
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: public/
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: scrape
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
