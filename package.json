@@ -1,0 +1,14 @@
+{
+  "name": "bloxtsar-baddies-scraper",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Polite fixed-range scraper for Bloxtsar Baddies item pages",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "scrape": "node src/main.js",
+    "test": "node --test"
+  }
+}

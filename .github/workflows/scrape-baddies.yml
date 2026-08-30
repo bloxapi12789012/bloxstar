@@ -1,0 +1,52 @@
+name: Scrape Bloxtsar Baddies items
+
+on:
+  schedule:
+    # Every 60 minutes, away from the top-of-hour Actions traffic spike.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      max_item_id:
+        description: Highest item ID to scan (inclusive)
+        required: false
+
+concurrency:
+  group: bloxtsar-baddies-hourly-scan
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    env:
+      MIN_ITEM_ID: '1'
+      # Empty for scheduled/default runs; src/config.js supplies 2856.
+      MAX_ITEM_ID: ${{ inputs.max_item_id }}
+      CONCURRENCY: '4'
+      OUTPUT_DIR: data
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Run tests
+        run: npm test
+
+      - name: Scan configured item ID range
+        run: npm run scrape
+
+      - name: Upload scan results
+        uses: actions/upload-artifact@v7
+        with:
+          name: baddies-items-${{ github.run_id }}
+          path: data/
+          if-no-files-found: error
+          retention-days: 30
